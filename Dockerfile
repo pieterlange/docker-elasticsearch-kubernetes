@@ -1,4 +1,4 @@
-FROM quay.io/pires/docker-elasticsearch:5.6.4
+FROM quay.io/pires/docker-elasticsearch:6.0.0
 
 MAINTAINER pjpires@gmail.com
 
@@ -18,10 +18,16 @@ ENV NODE_NAME=""
 RUN ./bin/elasticsearch-plugin install mapper-attachments
 
 # Install search-guard-ssl
-RUN ./bin/elasticsearch-plugin install -b com.floragunn:search-guard-ssl:5.6.4-23
+RUN ./bin/elasticsearch-plugin install -b com.floragunn:search-guard-ssl:6.0.0-24.beta1
 
 # Install s3 repository plugin
 RUN ./bin/elasticsearch-plugin install repository-s3
 
 # Install statsd plugin
 RUN ./bin/elasticsearch-plugin install https://github.com/Automattic/elasticsearch-statsd-plugin/releases/download/5.6.4.0/elasticsearch-statsd-5.6.4.0.zip
+
+# Kubernetes requires swap is turned off, so memory lock is redundant
+ENV MEMORY_LOCK false
+
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
